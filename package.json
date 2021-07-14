@@ -1,0 +1,31 @@
+{
+  "name": "naver-translate",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "papago",
+    "naver",
+    "korean",
+    "translate",
+    "dict"
+  ],
+  "homepage": "https://github.com/pepebecker/naver-translate#readme",
+  "bugs": {
+    "url": "https://github.com/pepebecker/naver-translate/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pepebecker/naver-translate.git"
+  },
+  "license": "ISC",
+  "author": "Pepe Becker <mail@pepebecker.com> (https://pepe.asia)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@vitalets/google-translate-api": "^7.0.0",
+    "axios": "^0.21.1",
+    "papago": "github:pepebecker/papago"
+  }
+}
