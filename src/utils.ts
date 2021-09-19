@@ -50,8 +50,7 @@ export const getExampleData = (data: SearchResult) => {
 export const getWordEntries = async (data: SearchResult, o?: Options): Promise<WordEntry[]> => {
   const items = getWordData(data)?.items;
   if (!items || items.length <= 0) return [];
-  const filtered = items.filter(item => item.meansCollector?.[0].partOfSpeech);
-  const results = await Promise.all(filtered.map(async item => {
+  const results = await Promise.all(items?.map(async item => {
     const collection = item?.meansCollector[0];
     const result: WordEntry = {
       entryId: item.entryId,
@@ -61,7 +60,7 @@ export const getWordEntries = async (data: SearchResult, o?: Options): Promise<W
         value: o?.strip ? stripHtml(mean.value) : stripLinks(mean.value),
         exampleOri: o?.strip ? stripHtml(mean.exampleOri) : stripLinks(mean.exampleOri),
         exampleTrans: o?.strip ? stripHtml(mean.exampleTrans) : stripLinks(mean.exampleTrans),
-      })),
+      })).filter(mean => mean.exampleOri),
       phonetics: item.searchPhoneticSymbolList?.map(p => ({
         type: p.symbolType,
         value: o?.strip ? stripHtml(p.symbolValue) : p.symbolValue,
@@ -76,7 +75,7 @@ export const getWordEntries = async (data: SearchResult, o?: Options): Promise<W
     }
     return result;
   }));
-  return results.filter(Boolean);
+  return results.filter(r => r?.means?.length);
 };
 
 export const getMeanings = async (data: SearchResult, o?: Options): Promise<MeaningEntry[]> => {
