@@ -33,6 +33,7 @@
   "dependencies": {
     "@vitalets/google-translate-api": "^7.0.0",
     "axios": "^0.21.1",
+    "axios-retry": "^3.1.9",
     "papago": "github:pepebecker/papago"
   },
   "devDependencies": {

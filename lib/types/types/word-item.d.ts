@@ -1,4 +1,5 @@
 export interface WordItem {
+    matchType: string;
     entryId: string;
     expEntry: string;
     meansCollector: [
