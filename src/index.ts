@@ -19,11 +19,15 @@ export const configurePapago = (config: Config) => {
   papago = new Papago(config);
 };
 
+const isUpperCase = (t: string) => t === t?.toUpperCase()
+const isLowerCase = (t: string) => t === t?.toLowerCase()
+
 const formatTranslation = (text: string) => {
   if (!text) return text;
-  if (text[text.length - 1] === '.') {
-    text = text.slice(0, -1);
-    text = text[0].toLowerCase() + text.slice(1);
+  text = text.replace(/(^It'?s\s)|(\.$)/ig, '')
+  if (isUpperCase(text[0]) && isLowerCase(text.split(' ')[0].slice(1))) {
+    if (text[0] === 'I' && (text[1] === ' ' || text[1] === '\'')) return text;
+    text = text[0].toLowerCase() + text.slice(1)
   }
   return text;
 };
