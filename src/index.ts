@@ -94,10 +94,10 @@ export const lookupStem = (query: string) => {
 
 export const lookupMeanings = async (
   query: string,
-  { enko = false, google = false, strip = false } = {}
+  { enko = false, google = false, strip = false, simple = false } = {}
 ) => {
   const meanings = await dict.searchMeanings(query, {
-    enko,
+    enko: enko || simple,
     strip,
     fetchExtraData: true,
   });
