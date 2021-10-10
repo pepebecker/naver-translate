@@ -103,46 +103,65 @@ export const getMeanings = async (
   o?: Options
 ): Promise<MeaningEntry[]> => {
   const wordEntries = await getWordEntries(data, o);
-  return wordEntries
-    .map((entry) => {
-      const means = entry.means.map((m) => {
-        return m.value?.split(/[;,] /).map((m) => {
-          // remove "(...)", "[...]", "a ", ending dot
-          m = m.replace(/\([^()]*\)|\[[^[\]]*\]|a\s|\.$/g, '');
-          m = m.replace(/\s+/g, ' '); // reduce multi-spaces to one space
-          return m.trim();
+  const matches = {} as { [key: string]: boolean };
+  return (
+    wordEntries
+      .map((entry) => {
+        const means = entry.means.map((m) => {
+          let t = m.value;
+          // Remove "(...)", "[...]", "a ", "an ", "It's"
+          t = t?.replace(/\([^()]*\)|\[[^[\]]*\]|^an?\s|\.$/gi, '');
+          t = t?.replace(/\s+/g, ' ');
+          return t
+            ?.split(/[;,] /)
+            .map((m) => m.trim())
+            .filter((m) => /[A-Za-z]/.test(m));
         });
-      });
-      return {
-        means: [...new Set(means.flat())].filter(Boolean),
-        partOfSpeech: entry.partOfSpeech,
-        partOfSpeech2: entry.partOfSpeech2,
-        origin: entry.origin?.replace(/\([^()]*\)|\[[^[\]]*\]/g, ''),
-        phonetics: entry.phonetics,
-      } as MeaningEntry;
-    })
-    .filter((entry) => entry.means?.length)
-    .reduce((acc, v, i) => {
-      const p = acc[i - 1];
-      if (p?.means.includes(v.means[0]) || v.means.includes(p?.means[0])) {
-        const bothHaveOrigin = p.origin && v.origin
-        const bothHavePos = p.partOfSpeech && v.partOfSpeech
-        if (!p.origin && v.origin) return [...acc.splice(0, -1), v];
-        if (p.origin && !v.origin) return acc;
-        // Compare origins
-        if (p.origin && v.origin) {
-          if (!v.origin.includes(p.origin) && !p.origin.includes(v.origin)) {
-            return [...acc, v] // Return both if origin differs
-          }
+        return {
+          means: [...new Set(means.flat())].filter(Boolean),
+          partOfSpeech: entry.partOfSpeech,
+          partOfSpeech2: entry.partOfSpeech2,
+          origin: entry.origin?.replace(/\([^()]*\)|\[[^[\]]*\]/g, ''),
+          phonetics: entry.phonetics,
+        } as MeaningEntry;
+      })
+      // Remove empty meanings
+      .filter((entry) => entry.means?.length)
+      // Remove duplicate meanings
+      .reduce((acc, val) => {
+        const means = val.means.filter((m) => {
+          if (matches[m]) return false;
+          matches[m] = true;
+          matches['beeing ' + m] = true;
+          matches[m.replace('being ', '')] = true;
+          return true;
+        });
+        if (means?.length > 0) {
+          return [...acc, { ...val, means }];
         }
-        // Compare parts of speech
-        if (!p.partOfSpeech && v.partOfSpeech) return [...acc.splice(0, -1), v];
-        if (p.partOfSpeech && !v.partOfSpeech) return acc;
-        return [...acc, v];
-      } else {
-        return [...acc, v];
-      }
-    }, [] as MeaningEntry[]);
+        return acc;
+      }, [] as MeaningEntry[])
+      .reduce((acc, v, i) => {
+        const p = acc[i - 1];
+        if (p?.means.includes(v.means[0]) || v.means.includes(p?.means[0])) {
+          if (!p.origin && v.origin) return [...acc.splice(0, -1), v];
+          if (p.origin && !v.origin) return acc;
+          // Compare origins
+          if (p.origin && v.origin) {
+            if (!v.origin.includes(p.origin) && !p.origin.includes(v.origin)) {
+              return [...acc, v]; // Return both if origin differs
+            }
+          }
+          // Compare parts of speech
+          if (!p.partOfSpeech && v.partOfSpeech)
+            return [...acc.splice(0, -1), v];
+          if (p.partOfSpeech && !v.partOfSpeech) return acc;
+          return [...acc, v];
+        } else {
+          return [...acc, v];
+        }
+      }, [] as MeaningEntry[])
+  );
 };
 
 export const getWordExamples = async (data: SearchResult, o?: Options) => {
