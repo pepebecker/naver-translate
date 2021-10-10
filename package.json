@@ -23,11 +23,10 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/types/index.d.ts",
   "files": [
-    "lib/"
+    "lib"
   ],
   "scripts": {
-    "prepublish": "npm run tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run tsc",
     "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json"
   },
   "dependencies": {
