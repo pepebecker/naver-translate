@@ -89,8 +89,8 @@ export const getWordEntries = async (
         };
         if (o?.fetchExtraData) {
           const extraData = await fetchEntry(item.entryId);
-          const origin = extraData?.entry?.group?.entryCommon?.origin_language;
-          result.origin = origin || null;
+          const origins = extraData?.entry?.members?.map((m: any) => m?.origin_language);
+          result.origin = origins?.filter(Boolean).join('|') || null;
         }
         return result;
       })
