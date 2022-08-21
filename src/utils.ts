@@ -5,7 +5,7 @@ import type { SearchResult } from './types/search-result';
 import { WordEntry } from './types/word-entry';
 
 const supRe = /<sup[^>]*>.*?<\/sup>/gi;
-const linkRe = /\(?[→↔]?<a[^>]*>.*?<\/a>\)?/gi;
+const linkRe = /\(?[→↔]/gi;
 const tagsRe = /<([^>]+)>/gi;
 const altsRe = /\[[^\]]*\]/gi;
 const htmlRe = new RegExp(
